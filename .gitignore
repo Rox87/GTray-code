@@ -1,7 +1,7 @@
 .venv/
 build/
 dist/
-logs/app.logs
+logs/app.log
 pessoal/__pycache__
 services/__pycache__
 __pycache__
