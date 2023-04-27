@@ -5,3 +5,4 @@ logs/app.logs
 pessoal/__pycache__
 services/__pycache__
 __pycache__
+GTray.spec
