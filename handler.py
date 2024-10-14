@@ -159,6 +159,7 @@ class Gtray:
                 Engineer.pos_processamento(clipboard,response)
             except Exception as ex:
                 logger.info(ex)
+                print(ex)
 
     def change_key(self,key):
         if self.AI != None:

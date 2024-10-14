@@ -16,7 +16,7 @@ class Engineer:
     def __init__(self,logger_from):
          global logger
          logger = logger_from
-
+        
     def pre_processamento(MODE='shortcut_file'):
 
         with open(config['GTRAY'][MODE],'r') as f:
@@ -67,21 +67,21 @@ class Engineer:
     
     def pos_processamento(clipboard,response):
         
-        if clipboard[0] != "#":
-            clipboard = '#' + clipboard
+        # if clipboard[0] != "#":
+        #     clipboard = '#' + clipboard
 
-        pyperclip.copy(clipboard)
-        sleep(0.1)
-        with keyboard.pressed(Key.ctrl):
-                keyboard.press('v')
-                keyboard.release('v')
-        sleep(0.1)
+        # pyperclip.copy(clipboard)
+        # sleep(0.1)
+        # with keyboard.pressed(Key.ctrl):
+        #         keyboard.press('v')
+        #         keyboard.release('v')
+        # sleep(0.1)
         
-        keyboard.press(Key.enter)
-        keyboard.release(Key.enter)
-        #sleep(0.3)
-        if response[0:6] == "python":
-            response=response[6::]
+        # keyboard.press(Key.enter)
+        # keyboard.release(Key.enter)
+        # #sleep(0.3)
+        # if response[0:6] == "python":
+        #     response=response[6::]
         
         pyperclip.copy(response)
         sleep(0.1)

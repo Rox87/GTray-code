@@ -1,0 +1,7 @@
+pynput
+pyperclip
+pywin32
+pystray
+keyboard
+openai
+PyQt5

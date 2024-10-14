@@ -11,7 +11,6 @@ config.read('assets/config.ini',encoding='utf-8')
 # Adicionando o handler ao logger
 
 
-
 class IA:
     def __init__(self,key,looger_from):
         global logger
@@ -30,12 +29,12 @@ class IA:
                 #sleep(0.1)
             retry-=1
             try:
-                response = openai.ChatCompletion.create(
-                        model="gpt-3.5-turbo",
-                        messages=messages) 
+                response = openai.chat.completions.create(
+                        model=config['GTRAY']['modelo'],
+                        messages=messages)
             except:
-                print('request AI failed')
-        codigo = self.python_filtro(response)    
+                logger.warn('request AI failed')
+        codigo = self.python_filtro(response.choices[0].message.content)    
         return codigo
 
 
@@ -49,17 +48,16 @@ class IA:
                 #sleep(0.1)
             retry-=1
             try:
-                response = openai.ChatCompletion.create(
-                        model="gpt-3.5-turbo",
+                response = openai.chat.completions.create(
+                        model=config['GTRAY']['modelo'],
                         messages=messages) 
-            except:
-                print('request AI failed')
-        resposta = response['choices'][0]['message']['content']
-        logger.info(f'Reposta: {resposta}')    
+            except Exception as e:
+                print('request AI failed:' + str(e))
+        resposta = response.choices[0].message.content
+        logger.info(f'Reposta: {resposta}')
         return resposta
 
-    def python_filtro(self,response):
-        coms = response['choices'][0]['message']['content']
+    def python_filtro(self,coms):
         ini_code = coms.find('```python')
         tag_code = coms.find('```')
         if tag_code<0:

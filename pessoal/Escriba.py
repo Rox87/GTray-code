@@ -16,20 +16,5 @@ class registrador:
     def addHand(self):    
         self.logger.addHandler(self.file_handler)
     def get_logger(self):
-        #logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-        #logger = logging.getLogger()
-
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
         return self.logger
-        # Criando um handler para exibir logs no console
-        #console_handler = logging.StreamHandler()
-        #console_handler.setLevel(logging.INFO)
-        #console_handler.setFormatter(logging.Formatter('%(levelname)s - %(message)s'))
-
-        # Adicionando o handler ao logger
-        #logger.addHandler(console_handler)
-
-        # Criando um handler para gravar logs em arquivo
-        file_handler = logging.FileHandler(config['GTRAY']['log'])
-        file_handler.setLevel(logging.INFO)
-        file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-        return logger
