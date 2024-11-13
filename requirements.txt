@@ -4,4 +4,4 @@ pywin32
 pystray
 keyboard
 openai
-PyQt5
+PyQt5==5.15.11

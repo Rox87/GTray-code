@@ -321,10 +321,16 @@ class GTray_CFG_UI(QWidget):
 
 
 if __name__ == '__main__':
-    
         pid = os.getpid()
+        # Abre (ou cria) um arquivo no modo de escrita ('w')
+        with open('cmd/lastpid.txt', 'r') as file:
+            pid2 = file.read()
         CREATE_NO_WINDOW = 0x08000000
-        subprocess.call(f'taskkill /f /FI "PID ne {pid}" /im GTray.exe', creationflags=CREATE_NO_WINDOW)
+        subprocess.call(f'taskkill /f /FI "PID eq {pid2}"', creationflags=CREATE_NO_WINDOW)
+        
+        with open('cmd/lastpid.txt', 'w') as file:
+            file.write(f'{pid}')
+
         app = QApplication(sys.argv)
         ex = GTray_CFG_UI()
         try:

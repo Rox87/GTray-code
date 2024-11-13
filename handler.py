@@ -5,15 +5,22 @@ import keyboard
 from pessoal.Decorador import tempo_decorrido
 from pessoal.IA import IA
 from pessoal.Engineer import Engineer
-
 import configparser
+import subprocess
 # Create a new config parser object
 config = configparser.ConfigParser()
 
 # Read in the configuration file
 config.read('assets/config.ini',encoding='utf-8')
 
+def wait_hotkey_release():  
+    print("Hotkey pressed, waiting for release...")
 
+    # Wait for all keys to be released
+    while keyboard.is_pressed('ctrl'):
+        pass
+
+    print("Hotkey released!")  
 class Gtray:
     processo = None
     icon = None
@@ -61,18 +68,26 @@ class Gtray:
     def start(self):
         with open(config['GTRAY']['shortcut_file'],'r') as f:
              self.shortcut = f.read()
-        try:
-            with open(config['GTRAY']['shortcut_py_file'],'r') as f:
-                self.shortcut_py = f.read()
-        except:
-             self.shortcut_py="F9"
 
+        with open(config['GTRAY']['shortcut_melhore_file'],'r') as f:
+             self.shortcut_melhore = f.read()
+
+        with open(config['GTRAY']['shortcut_py_file'],'r') as f:
+            self.shortcut_py = f.read()
+
+        with open(config['GTRAY']['shortcut_graphs_file'],'r') as f:
+            self.shortcut_graphs = f.read()
+
+        with open(config['GTRAY']['shortcut_creation_file'],'r') as f:
+            self.shortcut_creation = f.read()
     
         logger.info(f'chatGPT > contato salvo nos favoritos ({self.shortcut})')
         keyboard.add_hotkey(f'{self.shortcut.lower()}', self.chat_handler)
+        keyboard.add_hotkey(f'{self.shortcut_melhore.lower()}', self.sem_rodeios_melhore)
         keyboard.add_hotkey(f'{self.shortcut_py.lower()}', self.python_handler)
+        keyboard.add_hotkey(f'{self.shortcut_graphs.lower()}', self.graficos)
+        keyboard.add_hotkey(f'{self.shortcut_creation.lower()}', self.creation)
         logger.info(f'precione {self.shortcut} com um texto selecionado em um campo editavel e aguarde...')
-            
 
         #self.menu_state = pystray.MenuItem("Pausar", self.stop)
         #self.build_menu()
@@ -113,11 +128,6 @@ class Gtray:
             self.icon.stop()
         except:
             pass
-
-
-
-
-        
 
     def hide_terminal(self):
             logger.info('escondendo UI')
@@ -160,6 +170,31 @@ class Gtray:
             except Exception as ex:
                 logger.info(ex)
                 print(ex)
+
+    @tempo_decorrido
+    def creation(self):
+        wait_hotkey_release()       
+        subprocess.run("python code_widget.py", shell=True, capture_output=False, text=True)
+
+    @tempo_decorrido
+    def graficos(self):
+        wait_hotkey_release()       
+        subprocess.run("python graphs_widget.py", shell=True, capture_output=False, text=True)
+    
+    @tempo_decorrido
+    def sem_rodeios_melhore(self):
+        wait_hotkey_release()
+        try:
+            logger.info('mode chat')
+            logger.info('preparando dados')
+            clipboard = Engineer.pre_processamento()
+            logger.info('perguntando a inteligência artificial')
+            response = self.AI.responder(f"{clipboard}","Não responda o usuario, retorne apenas, sem rodeios, a própria entrada do usuário melhorada")
+            logger.info('entregando resposta')
+            Engineer.pos_processamento(clipboard,response)
+        except Exception as ex:
+            logger.info(ex)
+            print(ex)
 
     def change_key(self,key):
         if self.AI != None:
