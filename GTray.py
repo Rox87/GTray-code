@@ -169,26 +169,25 @@ class GTray_CFG_UI(QWidget):
         ''')
 
     def checkbox_visibility_changed(self, state):
-        if state != 2:
-            self.visible=False
+        if state != 2:  # Checkbox unchecked
+            self.visible = False
             self.start_buttons_def()
-        else:
-            self.visible=True
+        else:  # Checkbox checked
+            self.visible = True
+            self.show()  # Show the UI
 
     def startstop(self):
         if not hasattr(self.gt,'UI'):
             self.gt = Gtray(self,logger)
             self.apikey = os.getenv("OPENAI_API_KEY")
             self.gt.change_key(self.apikey)
-            
 
-        if self.visible==False:
-            self.gt.hide_terminal()
-            self.visible=True
-            self.autostart = True
-        elif self.visible==True:
-            self.gt.show_terminal()
-            self.visible=False
+        # Update visibility based on checkbox state
+        if self.checkbox_visibility.isChecked():
+            self.show()
+        else:
+            self.hide()
+
 
         if self.autostart == True:
             self.stop_buttons_def()
@@ -274,6 +273,7 @@ class GTray_CFG_UI(QWidget):
   
 
 
+
     def listen_shortcut(self):
         self.button_get_shortcut_clicked = True        
         self.header_shortcut.setText(config['GTRAY']['header_shortcut_state_rec'])
@@ -315,6 +315,7 @@ class GTray_CFG_UI(QWidget):
        #win32gui.ShowWindow(self.the_program_to_hide , win32con.SW_HIDE)
     def cmd_start(self):
         self.startstop()
+
 
 
 
