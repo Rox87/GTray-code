@@ -261,7 +261,7 @@ class GTray_CFG_UI(QWidget):
      
     def get_shortcut(self):
         try:
-            with open(config['GTRAY']['shortcut_file'],'r') as f:
+            with open(config['GTRAY']['shortcut_melhore_file'],'r') as f:
                 self.shortcut = f.read()
         except Exception as ex:
             print(ex)
@@ -271,8 +271,6 @@ class GTray_CFG_UI(QWidget):
         self.header_shortcut.setText(config['GTRAY']['header_shortcut_text'])
         QApplication.processEvents()
   
-
-
 
     def listen_shortcut(self):
         self.button_get_shortcut_clicked = True        

@@ -83,7 +83,7 @@ class Gtray:
         }
         for shortcut_type in shortcut_types:
             shortcut = self.config.get_shortcut(shortcut_type)
-            if shortcut_type == 'generic':
+            if shortcut_type == 'melhore':
                 self.shortcut = shortcut
             keyboard.add_hotkey(shortcut.lower(), handlers[shortcut_type])
             

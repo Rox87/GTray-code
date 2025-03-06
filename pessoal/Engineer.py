@@ -11,7 +11,7 @@ class Engineer:
         logger = logger_from
         self.config = ConfigManager()
         
-    def pre_processamento(self, mode='shortcut_file'):
+    def pre_processamento(self, mode='shortcut_melhore_file'):
         with open(self.config.get('GTRAY', mode), 'r') as f:
             shortcut = f.read()
 
