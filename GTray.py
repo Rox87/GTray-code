@@ -341,6 +341,8 @@ if __name__ == '__main__':
                 logger.info(f'main > {sys.argv[1]}')
                 ex.visible=False
                 ex.autostart=True
+                ex.checkbox_visibility.setChecked(ex.visible)  # Uncheck the visibility checkbox
+                ex.hide()  # Explicitly hide the UI
                 ex.startstop()
                 ex.gt.run()
             else:
