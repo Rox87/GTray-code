@@ -184,12 +184,12 @@ class GTray_CFG_UI(QWidget):
             
 
         if self.visible==False:
-            self.gt.hide_terminal()
-            self.visible==True
+            
+            self.visible=True
             self.autostart = True
         elif self.visible==True:
             self.gt.show_terminal()
-            self.visible==False
+            self.visible=False
 
         if self.autostart == True:
             self.stop_buttons_def()
