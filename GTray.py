@@ -9,6 +9,9 @@ from pessoal.Escriba import registrador
 import os
 import subprocess
 import sys
+from dotenv import load_dotenv
+
+load_dotenv()
 
 r = registrador()
 r.addHand()
@@ -176,8 +179,7 @@ class GTray_CFG_UI(QWidget):
     def startstop(self):
         if not hasattr(self.gt,'UI'):
             self.gt = Gtray(self,logger)
-        with open(config['GPT']['k'],'r') as f:
-            self.apikey = f.read()
+            self.apikey = os.getenv("OPENAI_API_KEY")
             self.gt.change_key(self.apikey)
             
 
@@ -269,24 +271,25 @@ class GTray_CFG_UI(QWidget):
             with open(config['GTRAY']['shortcut_file'],'w') as f:
                 f.write('ALT+P')
                 self.shortcut="ALT+P"
-
-        self.header_shortcut.setText('')   
+        
+        # Single update for both labels
         self.lbl_shortcut.setText(f"{self.shortcut}")
-        self.header_shortcut.setText(config['GTRAY']['header_shortcut_text'])   
+        self.header_shortcut.setText(config['GTRAY']['header_shortcut_text'])
+        QApplication.processEvents()
+  
 
 
     def listen_shortcut(self):
-        self.button_get_shortcut_clicked=True
+        self.button_get_shortcut_clicked = True        
         self.header_shortcut.setText(config['GTRAY']['header_shortcut_state_rec'])
         self.header_shortcut.setStyleSheet('font-size=20px')
         self.lbl_shortcut.setText(config['GTRAY']['lbl_shortcut_state_rec'])
-        self.lbl_shortcut.update()
-        self.header_shortcut.update()
+        # Single batch update for UI elements
         QApplication.processEvents()
+        # Single call to handle shortcut
         self.listen()
         self.get_shortcut()
-        self.autostart=False
-        self.startstop()
+        self.autostart = False
 
     def listen(self):
         if hasattr(self.kl, 'kl'):

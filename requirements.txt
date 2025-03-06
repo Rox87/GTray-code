@@ -1,7 +1,8 @@
-pynput
-pyperclip
-pywin32
-pystray
-keyboard
-openai
+pynput==1.8.0
+pyperclip==1.9.0
+pywin32==308
+pystray==0.19.4
+keyboard==0.13.5
+openai==1.65.4
+configparser==7.1.0
 PyQt5==5.15.11

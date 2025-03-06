@@ -5,9 +5,9 @@ import keyboard
 from pessoal.Decorador import tempo_decorrido
 from pessoal.IA import IA
 from pessoal.Engineer import Engineer
-import configparser
+from pessoal.config_manager import ConfigManager
 import subprocess
-# Create a new config parser object
+import configparser
 config = configparser.ConfigParser()
 
 # Read in the configuration file
@@ -25,182 +25,126 @@ class Gtray:
     processo = None
     icon = None
     shortcut = None
-    
+    def show_terminal(self):
+        if self.UI:
+            self.UI.show_UI()
+        logger.info("showing UI")
     def __init__(self,UI=None,logger_from=None):
         global logger
         logger = logger_from
+        self.config = ConfigManager()
         self.Engineer = Engineer(logger_from)
         self.AI = None
         self.UI = UI
+        self.initialize_app()
+    def initialize_app(self):
         logger.info('preparando...')
         self.sair = False
-        # força aplicação continuar executando mesmo em caso de erro
-        self.prosseguir = True     
-        # prompt que permite esconder/mostrar o terminal
+        self.prosseguir = True
         self.the_program_to_hide = win32gui.GetForegroundWindow()
-        
         self.mode = None
-
-        # icons
+        self.initialize_ui()
+    def initialize_ui(self):
         logger.info('carregando icones')
-        self.red_image = Image.open(config['GTRAY']['gtON'])
-        #self.green_image = Image.open(config['GTRAY']['gtOFF'])
-        
-        # Itens do menu que será construido dinamicamente
-        logger.info('preparando menu')
-        #self.menu_state = pystray.MenuItem("Pausar",self.UI.startstop)
-        self.menu_visible = pystray.MenuItem("Mostrar UI",self.show_terminal)
+        self.red_image = Image.open(self.config.get('GTRAY', 'gtON'))
+        self.menu_visible = pystray.MenuItem("Mostrar UI", self.show_terminal)
         self.menu_exit = pystray.MenuItem("Sair", self.on_exit)
-
-        # Define o obj do Gtray
         self.icon = pystray.Icon("GPTray", self.red_image, menu=pystray.Menu())
-        
-        # Esconde o terminal por padrão
-        #logger.info('escondendo o terminal')
-        #self.hide_terminal()
-        
-        # Incia app funcionando
-        #self.start()
-
-    def ignorar(self):
-         logger.info('GPTray esta pausado')
-
+        self.build_menu()
     def start(self):
-        with open(config['GTRAY']['shortcut_file'],'r') as f:
-             self.shortcut = f.read()
-
-        with open(config['GTRAY']['shortcut_melhore_file'],'r') as f:
-             self.shortcut_melhore = f.read()
-
-        with open(config['GTRAY']['shortcut_py_file'],'r') as f:
-            self.shortcut_py = f.read()
-
-        with open(config['GTRAY']['shortcut_graphs_file'],'r') as f:
-            self.shortcut_graphs = f.read()
-
-        with open(config['GTRAY']['shortcut_creation_file'],'r') as f:
-            self.shortcut_creation = f.read()
-    
-        logger.info(f'chatGPT > contato salvo nos favoritos ({self.shortcut})')
-        keyboard.add_hotkey(f'{self.shortcut.lower()}', self.chat_handler)
-        keyboard.add_hotkey(f'{self.shortcut_melhore.lower()}', self.sem_rodeios_melhore)
-        keyboard.add_hotkey(f'{self.shortcut_py.lower()}', self.python_handler)
-        keyboard.add_hotkey(f'{self.shortcut_graphs.lower()}', self.graficos)
-        keyboard.add_hotkey(f'{self.shortcut_creation.lower()}', self.creation)
-        logger.info(f'precione {self.shortcut} com um texto selecionado em um campo editavel e aguarde...')
-
-        #self.menu_state = pystray.MenuItem("Pausar", self.stop)
-        #self.build_menu()
-        #self.icon.icon = self.red_image
+        try:
+            self.register_shortcuts()
+            logger.info(f'precione {self.shortcut} com um texto selecionado em um campo editavel e aguarde...')
+        except Exception as ex:
+            logger.error(f"Error starting application: {str(ex)}")
+    def unregister_shortcuts(self):
+        shortcut_types = ['generic', 'melhore', 'py', 'graphs', 'creation']
+        for shortcut_type in shortcut_types:
+            shortcut = self.config.get_shortcut(shortcut_type)
+            try:
+                keyboard.remove_hotkey(shortcut.lower())
+            except:
+                pass
+    def register_shortcuts(self):
+        self.unregister_shortcuts()
+        shortcut_types = ['generic', 'melhore', 'py', 'graphs', 'creation']
+        handlers = {
+            'generic': self.chat_handler,
+            'melhore': self.sem_rodeios_melhore,
+            'py': self.python_handler,
+            'graphs': self.graficos,
+            'creation': self.creation
+        }
+        for shortcut_type in shortcut_types:
+            shortcut = self.config.get_shortcut(shortcut_type)
+            if shortcut_type == 'generic':
+                self.shortcut = shortcut
+            keyboard.add_hotkey(shortcut.lower(), handlers[shortcut_type])
+            
+    def stop(self):
+        self.prosseguir = False
+        try:
+            self.icon.stop()
+        except Exception as ex:
+            logger.error(f"Error stopping icon: {str(ex)}")
 
     def run(self):
         while self.prosseguir:
             try:
                 self.icon.run()
             except Exception as ex:
-                pass
-
+                logger.error(f"Error in main loop: {str(ex)}")
     def build_menu(self):
-         self.icon.menu = pystray.Menu(
-             #self.menu_state,
-             self.menu_exit
-             )
-         
-    def stop(self):
-        logger.info("pausando a aplicação")
-        try:
-            keyboard.clear_all_hotkeys()
-        except:
-            pass
-        
-        self.on_exit()
-        self.menu_state = pystray.MenuItem("Start", self.start) 
-        #self.icon.icon = self.green_image
-        self.build_menu()
-
-
+        self.icon.menu = pystray.Menu(self.menu_exit)
     def on_exit(self):
         logger.info("saindo da aplicação")
-
-       
-        self.prosseguir=False
+        self.prosseguir = False
         try:
             self.icon.stop()
-        except:
-            pass
-
-    def hide_terminal(self):
-            logger.info('escondendo UI')
-            self.UI.hide()
-            self.menu_visible = pystray.MenuItem("Mostrar UI",self.show_terminal)
-            #win32gui.ShowWindow(self.the_program_to_hide , win32con.SW_HIDE)
-            self.build_menu()      
-
-    def show_terminal(self):
-            logger.info('mostrando UI')
-            self.UI.show()
-            self.menu_visible = pystray.MenuItem("Esconder UI",self.hide_terminal)
-            win32gui.ShowWindow(self.the_program_to_hide , win32con.SW_SHOW) 
-            self.build_menu()
-
+        except Exception as ex:
+            logger.error(f"Error stopping icon: {str(ex)}")
+    @tempo_decorrido
+    def handle_ai_request(self, mode, prompt_modifier=""):
+        try:
+            logger.info(f'mode {mode}')
+            logger.info('preparando dados')
+            clipboard = self.Engineer.pre_processamento()
+            if not clipboard:
+                return
+            logger.info('perguntando a inteligência artificial')
+            if mode == 'python':
+                response = self.AI.python_responder(clipboard)
+            else:
+                response = self.AI.responder(clipboard, prompt_modifier)
+            logger.info('entregando resposta')
+            self.Engineer.pos_processamento(clipboard, response)
+        except Exception as ex:
+            logger.error(f"Error in {mode} handler: {str(ex)}")
     @tempo_decorrido
     def python_handler(self):
-            try:
-                logger.info('mode python')
-                logger.info('preparando dados')
-                clipboard = Engineer.pre_processamento()
-                logger.info('perguntando a inteligência artificial')
-
-                response = self.AI.python_responder(f"{clipboard}")
-                logger.info('resposta recebida')
-                Engineer.pos_processamento(clipboard,response)
-            except Exception as ex:
-                logger.info(ex)
-
+        self.handle_ai_request('python')
     @tempo_decorrido
     def chat_handler(self):
-            try:
-                logger.info('mode chat')
-                logger.info('preparando dados')
-                clipboard = Engineer.pre_processamento()
-                logger.info('perguntando a inteligência artificial')
-                response = self.AI.responder(f"{clipboard}")
-                logger.info('entregando resposta')
-                Engineer.pos_processamento(clipboard,response)
-            except Exception as ex:
-                logger.info(ex)
-                print(ex)
-
-    @tempo_decorrido
-    def creation(self):
-        wait_hotkey_release()       
-        subprocess.run("python code_widget.py", shell=True, capture_output=False, text=True)
-
-    @tempo_decorrido
-    def graficos(self):
-        wait_hotkey_release()       
-        subprocess.run("python graphs_widget.py", shell=True, capture_output=False, text=True)
-    
+        self.handle_ai_request('chat')
     @tempo_decorrido
     def sem_rodeios_melhore(self):
-        wait_hotkey_release()
+        self.handle_ai_request('chat', "Não responda o usuario, retorne apenas, sem rodeios, a própria entrada do usuário melhorada")
+    @tempo_decorrido
+    def creation(self):
         try:
-            logger.info('mode chat')
-            logger.info('preparando dados')
-            clipboard = Engineer.pre_processamento()
-            logger.info('perguntando a inteligência artificial')
-            response = self.AI.responder(f"{clipboard}","Não responda o usuario, retorne apenas, sem rodeios, a própria entrada do usuário melhorada")
-            logger.info('entregando resposta')
-            Engineer.pos_processamento(clipboard,response)
+            subprocess.run("python code_widget.py", shell=True, capture_output=False, text=True)
         except Exception as ex:
-            logger.info(ex)
-            print(ex)
-
-    def change_key(self,key):
-        if self.AI != None:
+            logger.error(f"Error launching code widget: {str(ex)}")
+    @tempo_decorrido
+    def graficos(self):
+        try:
+            subprocess.run("python graphs_widget.py", shell=True, capture_output=False, text=True)
+        except Exception as ex:
+            logger.error(f"Error launching graphs widget: {str(ex)}")
+    def change_key(self, key):
+        if self.AI is not None:
             del self.AI
-        self.AI = IA(key,logger)
-
+        self.AI = IA(key, logger)
 if __name__ == '__main__':
     app = Gtray()
     app.run()

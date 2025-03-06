@@ -1,2 +1,2 @@
 cd ..
-poetry run python GTray.py 2
+python GTray.py 2
