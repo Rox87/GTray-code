@@ -46,7 +46,7 @@ class KListen():
                         for key in self.keys:
                             ck =  ck + '+' + f"{key}"
                         ck = ck[1::]
-                        with open(config[self.combo]['shortcut_file'],'w',encoding='utf-8') as f:
+                        with open(config[self.combo]['shortcut_melhore_file'],'w',encoding='utf-8') as f:
                             f.write(ck.upper())
                         if len(ck)>1: 
                            self.flag_sair = 1
