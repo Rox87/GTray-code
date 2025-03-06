@@ -179,7 +179,14 @@ class GTray_CFG_UI(QWidget):
     def startstop(self):
         if not hasattr(self.gt,'UI'):
             self.gt = Gtray(self,logger)
-            self.apikey = os.getenv("OPENAI_API_KEY")
+        file_path = config['GTRAY']['k']
+        if not os.path.isfile(file_path):
+            # Crie o arquivo e escreva o conteúdo inicial
+            with open(file_path, 'w') as file:
+                file.write('')
+        with open(file_path, 'r') as f:
+            self.apikey = f.read()
+                
             self.gt.change_key(self.apikey)
 
         # Update visibility based on checkbox state
@@ -215,7 +222,8 @@ class GTray_CFG_UI(QWidget):
             self.input_apikey.setStyleSheet('''color:black; font-size: 19px;background-color:lightgrey;''')
             self.input_apikey_state = 'unblock'
         else:
-            self.apikey = os.getenv("OPENAI_API_KEY")
+            with open(config['GTRAY']['k'], 'r') as f:
+                self.apikey = f.read()
             if self.gt == None:
                 self.gt = Gtray(self,logger)
             self.gt.change_key(self.apikey)
@@ -233,8 +241,9 @@ class GTray_CFG_UI(QWidget):
 
     def write_k(self):
         try:
-            with open(config['GPT']['k'],'w') as f:
+            with open(config['GTRAY']['k'],'w') as f:
                 f.write(self.input_apikey.text())
+            self.apikey = self.input_apikey.text()
         except Exception as ex:
             print(ex)
         QMessageBox.information(self, config['GTRAY']['write_k_0'],config['GTRAY']['write_k_1'], QMessageBox.Ok)
