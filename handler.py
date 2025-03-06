@@ -29,6 +29,7 @@ class Gtray:
         if self.UI:
             self.UI.show_UI()
         logger.info("showing UI")
+        
     def hide_terminal(self):
         if self.UI:
             self.UI.hide_UI()

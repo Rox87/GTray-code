@@ -173,7 +173,6 @@ class GTray_CFG_UI(QWidget):
             self.visible=False
             self.start_buttons_def()
         else:
-
             self.visible=True
 
     def startstop(self):
@@ -267,9 +266,6 @@ class GTray_CFG_UI(QWidget):
                 self.shortcut = f.read()
         except Exception as ex:
             print(ex)
-            with open(config['GTRAY']['shortcut_file'],'w') as f:
-                f.write('ALT+P')
-                self.shortcut="ALT+P"
         
         # Single update for both labels
         self.lbl_shortcut.setText(f"{self.shortcut}")

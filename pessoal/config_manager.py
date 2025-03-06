@@ -29,8 +29,9 @@ class ConfigManager:
 
     def get_shortcut(self, shortcut_type):
         """Get a shortcut configuration"""
-        env_var = f"SHORTCUT_{shortcut_type.upper()}"
-        value = os.environ.get(env_var)
+        env_var = f"assets/shortcut_{shortcut_type.lower()}.cfg"
+        with open(env_var,'r') as f:
+            value = f.read().strip()
         if not value:
             raise KeyError(f"Environment variable {env_var} not found")
         return value.strip()
