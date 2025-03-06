@@ -217,8 +217,7 @@ class GTray_CFG_UI(QWidget):
             self.input_apikey.setStyleSheet('''color:black; font-size: 19px;background-color:lightgrey;''')
             self.input_apikey_state = 'unblock'
         else:
-            with open(config['GPT']['k'],'r') as f:
-                self.apikey = f.read()
+            self.apikey = os.getenv("OPENAI_API_KEY")
             if self.gt == None:
                 self.gt = Gtray(self,logger)
             self.gt.change_key(self.apikey)
