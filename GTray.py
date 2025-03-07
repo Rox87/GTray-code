@@ -1,5 +1,5 @@
 
-from PyQt5.QtWidgets import QDesktopWidget,QCheckBox,QLineEdit,QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QMessageBox
+from PyQt5.QtWidgets import QDesktopWidget,QCheckBox,QLineEdit,QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QMessageBox, QComboBox
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QPixmap,QDesktopServices,QIcon
 from services.klisten import KListen
@@ -57,43 +57,46 @@ class GTray_CFG_UI(QWidget):
         self.input_apikey_state = config['GTRAY']['input_apikey_state']
 
         self.btn_apikey = QPushButton(config['GTRAY']['btn_apikey_block_text'])
-
     
     
-
         self.input_blockunblock(self.fake_event)
-
         self.lbl_shortcut = QLabel()
         self.header_shortcut = QLabel(config['GTRAY']['header_shortcut_text'])
         self.btn_shortcut = QPushButton(config['GTRAY']['btn_shortcut_text'])
         self.btn_shortcut.clicked.connect(self.get_listen_dialog)
         self.header_shortcut.setStyleSheet('''color:white; font-size: 25px;background-color:#191970;''')
         self.lbl_shortcut.setStyleSheet('''color:black;font-size: 20px; background-color:lightgrey;''')
-        self.setStyleSheet("""
-    background-color: #2B5DD1;
-    color: #FFFFFF;
-    border-style: outset;
-    padding: 2px;
-    font: bold 20px;
-    border-width: 6px;
-    border-radius: 25px;
-    border-color: #2752B8;
-    width:200px;
-    }
-    QPushButton {
-    border-radius: 5px;
-    border: 1px solid #000;
-    padding: 10px 20px;
-    background: darkred;
-
-    font-size: 2em;
-    }
-    QPushButton:hover {
-        color:white;
-        background-color: #D2691E;
-                }
-            """)
         
+        # Add ComboBox for shortcut types
+        self.shortcut_type_combo = QComboBox()
+        self.shortcut_type_combo.addItems(['generic', 'melhore', 'py', 'graphs', 'creation'])
+        self.shortcut_type_combo.setCurrentText('melhore')  # Default to 'melhore' for backward compatibility
+        self.shortcut_type_combo.currentTextChanged.connect(self.on_shortcut_type_changed)
+        self.current_shortcut_type = 'melhore'  # Initialize with default value
+        self.setStyleSheet("""
+        background-color: #2B5DD1;
+        color: #FFFFFF;
+        border-style: outset;
+        padding: 2px;
+        font: bold 20px;
+        border-width: 6px;
+        border-radius: 25px;
+        border-color: #2752B8;
+        width:200px;
+        }
+        QPushButton {
+        border-radius: 5px;
+        border: 1px solid #000;
+        padding: 10px 20px;
+        background: darkred;
+
+        font-size: 2em;
+        }
+        QPushButton:hover {
+            color:white;
+            background-color: #D2691E;
+                    }
+                """)
         self.checkbox_visibility = QCheckBox("Visível")
         self.checkbox_visibility.setChecked(True)
         self.checkbox_visibility.stateChanged.connect(self.checkbox_visibility_changed)
@@ -121,6 +124,7 @@ class GTray_CFG_UI(QWidget):
         self.vbox.addWidget(self.input_apikey)
         self.vbox.addWidget(self.btn_apikey)
         self.vbox.addWidget(self.header_shortcut)
+        self.vbox.addWidget(self.shortcut_type_combo)  # Add the ComboBox to the layout
         self.vbox.addWidget(self.lbl_shortcut)
         self.vbox.addWidget(self.btn_shortcut)  
         self.vbox.addWidget(self.header_startstop)
@@ -267,10 +271,14 @@ class GTray_CFG_UI(QWidget):
             self.listen_shortcut()
         else:
             pass
-     
+    def on_shortcut_type_changed(self, shortcut_type):
+        self.current_shortcut_type = shortcut_type
+        self.get_shortcut()
+
     def get_shortcut(self):
         try:
-            with open(config['GTRAY']['shortcut_melhore_file'],'r') as f:
+            shortcut_file = f"assets/shortcut_{self.current_shortcut_type}.cfg"
+            with open(shortcut_file, 'r') as f:
                 self.shortcut = f.read()
         except Exception as ex:
             print(ex)
@@ -297,7 +305,7 @@ class GTray_CFG_UI(QWidget):
         if hasattr(self.kl, 'kl'):
             self.kl.__init__()
         else:
-            self.kl = KListen()
+            self.kl = KListen(combo=self.current_shortcut_type)
         self.get_shortcut()
 
         self.kl.run()
