@@ -69,10 +69,10 @@ class GTray_CFG_UI(QWidget):
         
         # Add ComboBox for shortcut types
         self.shortcut_type_combo = QComboBox()
-        self.shortcut_type_combo.addItems(['generic', 'melhore', 'py', 'graphs', 'creation'])
-        self.shortcut_type_combo.setCurrentText('melhore')  # Default to 'melhore' for backward compatibility
+        self.shortcut_type_combo.addItems(['generic', 'upgrade', 'python' , 'creation'])
+        self.shortcut_type_combo.setCurrentText('upgrade')  # Default to 'melhore' for backward compatibility
         self.shortcut_type_combo.currentTextChanged.connect(self.on_shortcut_type_changed)
-        self.current_shortcut_type = 'melhore'  # Initialize with default value
+        self.current_shortcut_type = 'upgrade'  # Initialize with default value
         self.setStyleSheet("""
         background-color: #2B5DD1;
         color: #FFFFFF;

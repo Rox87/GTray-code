@@ -64,7 +64,7 @@ class Gtray:
         except Exception as ex:
             logger.error(f"Error starting application: {str(ex)}")
     def unregister_shortcuts(self):
-        shortcut_types = ['generic', 'melhore', 'py', 'graphs', 'creation']
+        shortcut_types = ['generic', 'upgrade', 'python', 'creation']
         for shortcut_type in shortcut_types:
             shortcut = self.config.get_shortcut(shortcut_type)
             try:
@@ -73,17 +73,17 @@ class Gtray:
                 pass
     def register_shortcuts(self):
         self.unregister_shortcuts()
-        shortcut_types = ['generic', 'melhore', 'py', 'graphs', 'creation']
+        shortcut_types = ['generic', 'upgrade', 'python', 'creation']
         handlers = {
             'generic': self.chat_handler,
-            'melhore': self.sem_rodeios_melhore,
-            'py': self.python_handler,
+            'upgrade': self.sem_rodeios_upgrade,
+            'python': self.python_handler,
             'graphs': self.graficos,
             'creation': self.creation
         }
         for shortcut_type in shortcut_types:
             shortcut = self.config.get_shortcut(shortcut_type)
-            if shortcut_type == 'melhore':
+            if shortcut_type == 'upgrade':
                 self.shortcut = shortcut
             keyboard.add_hotkey(shortcut.lower(), handlers[shortcut_type])
             
@@ -133,7 +133,7 @@ class Gtray:
     def chat_handler(self):
         self.handle_ai_request('chat')
     @tempo_decorrido
-    def sem_rodeios_melhore(self):
+    def sem_rodeios_upgrade(self):
         self.handle_ai_request('chat', "Não responda o usuario, retorne apenas, sem rodeios, a própria entrada do usuário melhorada")
     @tempo_decorrido
     def creation(self):
