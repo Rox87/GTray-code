@@ -1,68 +1,75 @@
-# GTray-code
+# GTray
 
-A system tray application that helps manage and monitor system resources.
+É uma aplicação que permite o uso da IA em qualquer programa, melhorando o texto selecionado no momento em que a tecla de atalho é pressionada.
 
-## Features
+## Pré-requisitos
 
-- System tray integration
-- Resource monitoring
-- Easy-to-use interface
-- Lightweight implementation
+- Python 3.x
+- Sistema operacional Windows
+- Chave da API do OpenAI
 
-## Installation
+## Instalação
 
-1. Clone the repository:
+1. Clone o repositório ou baixe o código-fonte
+
+2. Instale as dependências necessárias:
 ```bash
-git clone https://github.com/Rox87/GTray-code.git
+pip install -r requirements.txt
 ```
 
-```markdown:README.md
-2. Navigate to project directory:
+## Configuração
+
+1. Inicie a aplicação executando:
 ```bash
-cd GTray-code
+python GTray.py
 ```
 
-```markdown:README.md
-3. Install dependencies (if any)
+2. Configure sua chave da API do OpenAI:
+   - Clique no botão "Configurar API Key"
+   - Digite sua chave da API do OpenAI
+   - Clique em "Salvar" para salvar a chave
 
-## Usage
+3. Configure os atalhos de teclado:
+   - Clique no botão "Configurar Atalho"
+   - Pressione a combinação de teclas desejada
+   - O atalho será salvo automaticamente
 
-1. Run the application:
-```bash
-./GTray-code
-```
+## Uso
 
-```markdown:README.md
-2. The application will appear in your system tray
-3. Right-click the tray icon to access available options
-4. Left-click to view current system status
+1. Inicie a aplicação:
+   - Clique no botão "Iniciar" para ativar o serviço
+   - A aplicação será minimizada para a bandeja do sistema
 
-## Requirements
+2. Usando os atalhos:
+   - Modo genérico: Use o atalho configurado para assistência geral da IA
+   - Modo Python: Use o atalho específico do Python para geração de código
+   - Modo gráfico: Use o atalho gráfico para visualização de dados
+   - Modo criação: Use o atalho de criação para novos projetos de código
 
-- Operating System: Windows/Linux/MacOS
-- System tray support
+3. Controle de visibilidade:
+   - Use a checkbox "Visível" para controlar a visibilidade da interface
+   - A aplicação continua rodando em segundo plano quando oculta
 
-## Contributing
+## Recursos
 
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+- Integração com a bandeja do sistema
+- Múltiplos modos de assistência da IA
+- Atalhos de teclado personalizáveis
+- Geração e melhoria de código
+- Geração de gráficos a partir de dados
+- Assistente para criação de projetos
 
-## License
+## Dependências
 
-This project is licensed under the MIT License - see the LICENSE file for details
+- pynput==1.8.0
+- pyperclip==1.9.0
+- pywin32==308
+- pystray==0.19.4
+- keyboard==0.13.5
+- openai==1.65.4
+- configparser==7.1.0
+- PyQt5==5.15.11
 
-## Contact
+## Nota
 
-Project Link: [https://github.com/Rox87/GTray-code](https://github.com/Rox87/GTray-code)
-
-## Acknowledgments
-
-* System tray implementation
-* Resource monitoring tools
-* Contributors and testers
-```
-
-This README.md template provides a clear structure with all essential sections including description, features, installation steps, usage instructions, requirements, contribution guidelines, licensing information, and contact details. Feel free to customize the content further based on specific project needs.
+Certifique-se de manter sua chave da API em segurança e nunca compartilhá-la publicamente. A aplicação armazena a chave da API localmente em um formato criptografado.
